@@ -4,7 +4,7 @@
    ========================================================================= */
 
 const CONFIG = {
-  API_URL: "https://script.google.com/macros/s/REPLACE_WITH_YOUR_DEPLOYMENT_ID/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbzQO0bFEfT3dNEhX2ijR9hytr78pfTEC5k64Z4m0Kpnj_TufQzCohKLb0lkH3GQSECu/exec",
   WHATSAPP_NUMBER: "60137137100", // digits only, country code first — used by the WhatsApp button
   // One Google review link per workshop, shown after a customer submits
   // their internal review. Get yours from business.google.com → your
@@ -13,11 +13,12 @@ const CONFIG = {
   // using Google's Place ID Finder if you don't have Business Profile
   // access. Leave a workshop blank/unset to simply not show the button for it.
   GOOGLE_REVIEW_LINKS: {
-    "Melaka": "",
-    "Negeri Sembilan": "",
-    "Johor": ""
+    "Melaka": "https://search.google.com/local/writereview?placeid=ChIJx12eMwDl0TERGeSikxRbNjU",
+    "Negeri Sembilan": "https://search.google.com/local/writereview?placeid=ChIJnT6mkSTnzTERheFsqeYbjNA",
+    "Johor": "https://search.google.com/local/writereview?placeid=ChIJazvBzr5x2jERYqMdQsUujLU"
   }
 };
+
 
 /* Escapes user-submitted free text before it's inserted into the page —
    applied to fields that come from the public (the booking form, review
