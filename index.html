@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workshop2U Member Portal</title>
+<meta name="theme-color" content="#0b0f14">
+<!-- Open Graph / social sharing -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+</head>
+<body>
+<div id="login"><div class="stage"><div class="panel">
+<div id="loginPanel" class="auth-shell hidden">
+<form id="loginForm" novalidate>
+<label class="lf"><span class="cap">MEMBER ID</span><span class="fld"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="loginUser" required autocomplete="username" placeholder="Enter Tech ID (e.g., T-714)"></span></label>
+<label class="lf"><span class="cap">PASSWORD</span><span class="fld"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0 4-1 6-3 8M8 8a5 5 0 0 1 9 3c0 3 0 5-1 7M5 11a7 7 0 0 1 1-4M12 11v3"/></svg><input id="loginPass" type="password" required autocomplete="current-password" placeholder="••••••••••"></span></label>
+<button class="auth-btn" type="submit" id="loginSubmit">Authenticate Access</button>
+<div class="form-msg" id="loginMsg"></div></form>
+<div class="pf2">BIO-SCAN ACTIVE &nbsp;|&nbsp; RSA SECURED</div>
+<div class="auth-switch"><button id="showForgotPassword" type="button">Forgot your password?</button></div></div>
+    <div id="authChecking" class="auth-shell hidden" style="text-align:center">
+      <div class="spinner" aria-hidden="true"></div>
+      <p style="text-align:center">Checking your session…</p>
+      <div class="auth-switch"><button id="authCheckingSkip" type="button">Taking too long? Click here to start over</button></div>
+    </div>
+    <script>
+      // Runs immediately as the page parses — decides synchronously whether
+      // to show the login form or the "checking session" placeholder, before
+      // script.js has even loaded, so there's no visible flash either way.
+      (function () {
+        var hasSession = false;
+        try { hasSession = !!localStorage.getItem("w2u_session"); } catch (e) {}
+        var el = document.getElementById(hasSession ? "authChecking" : "loginPanel");
+        if (el) el.classList.remove("hidden");
+      })();
+    </script>
+
+    <!-- FEATURE 4: OTP verification step for staff logins -->
+    <div id="otpPanel" class="auth-shell hidden">
+      <h2>Enter verification code</h2>
+      <p id="otpHint">We emailed a 6-digit code to your account.</p>
+      <form id="otpForm" novalidate>
+        <div class="field"><label for="otpCode">6-digit code</label><input id="otpCode" inputmode="numeric" maxlength="6" required></div>
+        <button class="btn btn-amber btn-block" type="submit">Verify &amp; Log In</button>
+        <div class="form-msg" id="otpMsg"></div>
+      </form>
+      <div class="auth-switch"><button id="otpBack" type="button">Back to login</button></div>
+    </div>
+
+    <!-- FEATURE 6: Forgot password (code-based reset) -->
+    <div id="forgotPanel" class="auth-shell hidden">
+      <h2>Reset your password</h2>
+      <form id="forgotRequestForm" novalidate>
+        <div class="field"><label for="forgotIdentifier">Username or email</label><input id="forgotIdentifier" required></div>
+        <button class="btn btn-amber btn-block" type="submit">Send Reset Code</button>
+        <div class="form-msg" id="forgotRequestMsg"></div>
+      </form>
+      <form id="forgotResetForm" class="hidden" novalidate style="margin-top:18px">
+        <div class="field"><label for="resetUsername">Username</label><input id="resetUsername" required></div>
+        <div class="field"><label for="resetCode">Reset code (from email)</label><input id="resetCode" required></div>
+        <div class="field"><label for="resetNewPassword">New password</label><input id="resetNewPassword" type="password" minlength="6" required></div>
+        <button class="btn btn-amber btn-block" type="submit">Set New Password</button>
+        <div class="form-msg" id="forgotResetMsg"></div>
+      </form>
+      <div class="auth-switch"><button id="forgotBack" type="button">Back to login</button></div>
+    </div>
+
+</div></div></div>
+
+<aside class="sidebar"><div class="brand"><i></i><span>WORKSHOP2U<small>MEMBER PORTAL</small></span></div>
+<nav><div class="dash-tabs tabs-member">
+        <button class="dash-tab active" data-tab="memHistoryPanel">Service History</button>
+        <button class="dash-tab" data-tab="memVehiclesPanel">My Vehicles</button>
+        <button class="dash-tab" data-tab="memProfilePanel">My Profile</button>
+        <button class="dash-tab hidden" data-tab="memPasswordPanel">Change Password</button>
+      </div>
+<div class="dash-tabs tabs-staff">
+        <button class="dash-tab active" data-tab="staffAnalyticsPanel">Dashboard</button>
+        <button class="dash-tab" data-tab="staffMembersPanel">Members</button>
+        <button class="dash-tab" data-tab="staffHistoryPanel">Service History</button>
+        <button class="dash-tab" data-tab="staffBookingsPanel">Bookings</button>
+        <button class="dash-tab" data-tab="staffReviewsPanel">Reviews</button>
+        <button class="dash-tab hidden" data-tab="staffAccountsPanel" id="tabAccounts">Manage Staff Accounts</button>
+        <button class="dash-tab hidden" data-tab="staffAuditLogPanel" id="tabAuditLog">Audit Log</button>
+        <button class="dash-tab hidden" data-tab="staffPasswordPanel">Change Password</button>
+      </div>
+</nav>
+<div class="pfw"><div class="menu hidden" id="menu">
+<button data-open="Password">Change password</button><button id="menuTheme">Switch to dark view</button>
+<button id="menuBook">Book an appointment</button><a id="whatsappFloat" href="#" target="_blank" rel="noopener">WhatsApp support</a><hr><button class="d" id="menuLogout">Log out</button></div>
+<button class="pf" id="pf" aria-haspopup="true"><span class="av" id="pfAv"></span><span><b id="pfName"></b><small id="pfMail"></small><span class="role-badge" id="pfRole"></span></span></button></div></aside>
+<header class="topbar"><button class="ib" id="sideToggle" title="Show / hide menu"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg></button><h1 id="pageTitle"></h1><button class="ib" id="themeToggle" aria-label="Toggle bright/dark view" title="Toggle bright / dark view">🌙</button></header>
+
+<span class="hidden"><strong id="memName"></strong><strong id="staffName"></strong><span id="staffRoleBadge"></span></span>
+    <div id="memberDashboard" class="hidden">
+      
+      
+      
+      <div class="dash-panel active" id="memHistoryPanel">
+<div class="stat-row">
+        <div class="stat-box"><strong id="memTotalServices">0</strong><span>Total services</span></div>
+        <div class="stat-box"><strong id="memTotalSpent">RM 0</strong><span>Total spent</span></div>
+        <div class="stat-box"><strong id="memLastDate">—</strong><span>Last service date</span></div>
+        <div class="stat-box"><strong id="memNextDue">—</strong><span>Next service due</span></div>
+      </div>
+        <div class="toolbar">
+          <div class="field"><label for="memVehicleFilter">Vehicle</label><select id="memVehicleFilter"><option value="All">All my vehicles</option></select></div>
+          <button class="btn btn-ghost btn-small" id="memExportCsv">Export CSV</button>
+          <button class="btn btn-ghost btn-small" id="memPrint">Print / Save PDF</button>
+        </div>
+        <div class="table-wrap">
+          <table id="memHistoryTable">
+            <thead><tr><th>Date</th><th>Vehicle Type</th><th>Plate No.</th><th>Workshop</th><th>Service Type</th><th>Price (RM)</th><th>Notes</th></tr></thead>
+            <tbody id="memHistoryBody"><tr class="empty-row"><td colspan="7">Log in to see your service history.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="memVehiclesPanel">
+        <div id="memVehicleList"><p>No vehicles on file yet.</p></div>
+      </div>
+
+      <div class="dash-panel" id="memProfilePanel">
+        <div class="form-panel">
+          <div class="form-grid">
+            <div class="field"><label>Full name</label><input id="memProfName" disabled></div>
+            <div class="field"><label>Address</label><input id="memProfAddress" disabled></div>
+            <div class="field"><label>Phone</label><input id="memProfPhone" disabled></div>
+            <div class="field"><label>Email</label><input id="memProfEmail" disabled></div>
+          </div>
+          <p class="form-note">To update your profile details, please contact your workshop.</p>
+        </div>
+      </div>
+
+      <div class="dash-panel" id="memPasswordPanel">
+        <form class="form-panel" id="memPasswordForm" novalidate style="max-width:440px">
+          <div class="field"><label for="memOldPass">Current password</label><input id="memOldPass" type="password" required></div>
+          <div class="field"><label for="memNewPass">New password</label><input id="memNewPass" type="password" required minlength="6"></div>
+          <button class="btn btn-amber" type="submit">Update Password</button>
+          <div class="form-msg" id="memPasswordMsg"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- STAFF DASHBOARD -->
+    <div id="staffDashboard" class="hidden">
+      
+      
+      
+      <!-- History (+ Add Service Record, embedded below the toolbar) -->
+      <div class="dash-panel" id="staffHistoryPanel">
+        <div class="toolbar">
+          <div class="field"><label for="staffWorkshopFilter">Workshop</label>
+            <select id="staffWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+          <div class="field"><label for="staffSearch">Search plate / name</label><input id="staffSearch" placeholder="e.g. VBA 1234"></div>
+          <button class="btn btn-amber btn-small" id="openAddHistory" type="button">+ Add Service Record</button>
+          <button class="btn btn-ghost btn-small" id="staffRefresh">Refresh</button>
+          <button class="btn btn-ghost btn-small" id="staffExportCsv">Export CSV</button>
+          <button class="btn btn-ghost btn-small" id="staffPrint">Print / Save PDF</button>
+        </div>
+
+        <div class="form-panel hidden" id="staffAddHistoryPanel" style="margin-bottom:22px;">
+          <h3 id="addHistoryFormTitle" style="margin-bottom:14px;">Add Service Record</h3>
+          <form id="addHistoryForm" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="ahDate">Date</label><input id="ahDate" type="date" required></div>
+              <div class="field"><label for="ahUsername">Member username</label><input id="ahUsername" placeholder="existing member username" required></div>
+              <div class="field"><label for="ahName">Customer name</label><input id="ahName" required></div>
+              <div class="field field-full"><label for="ahAddress">Customer address</label><input id="ahAddress" required></div>
+              <div class="field"><label for="ahVehicleType">Vehicle type</label><input id="ahVehicleType" required></div>
+              <div class="field"><label for="ahPlate">Vehicle plate number</label><input id="ahPlate" required></div>
+              <div class="field"><label for="ahWorkshop">Workshop location</label><select id="ahWorkshop" required><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+              <div class="field"><label for="ahServiceType">Type of service</label><select id="ahServiceType" required><option>Normal Service</option><option>Repair</option><option>Troubleshooting</option><option>Car Wash</option><option>A/C Service</option></select></div>
+              <div class="field"><label for="ahPrice">Price (RM)</label><input id="ahPrice" type="number" step="0.01" min="0" required></div>
+              <div class="field field-full"><label for="ahNotes">Notes (optional)</label><textarea id="ahNotes" rows="2"></textarea></div>
+            </div>
+            <p class="form-note" id="addHistoryNote">Saving a record automatically emails the customer a PDF invoice and a feedback link, and updates their vehicle list.</p>
+            <button class="btn btn-amber" type="submit" id="addHistorySubmitBtn">Save Service Record</button>
+            <button class="btn btn-ghost" type="button" id="cancelEditHistory" style="margin-left:10px;">Cancel</button>
+            <div class="form-msg" id="addHistoryMsg"></div>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table id="staffHistoryTable">
+            <thead><tr><th>Date</th><th>Name</th><th>Address</th><th>Vehicle Type</th><th>Plate No.</th><th>Workshop</th><th>Service Type</th><th>Price (RM)</th><th>Notes</th><th class="no-export">Action</th></tr></thead>
+            <tbody id="staffHistoryBody"><tr class="empty-row"><td colspan="10">Log in to see records.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Members (+ Add Member, embedded below the toolbar) -->
+      <div class="dash-panel" id="staffMembersPanel">
+        <div class="toolbar">
+          <div class="field"><label for="staffMemberWorkshopFilter">Workshop</label>
+            <select id="staffMemberWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+          <button class="btn btn-amber btn-small" id="openAddMember" type="button">+ Add Member</button>
+          <button class="btn btn-ghost btn-small" id="staffMembersRefresh">Refresh</button>
+        </div>
+
+        <div class="form-panel hidden" id="staffAddMemberPanel" style="margin-bottom:22px;">
+          <h3 style="margin-bottom:14px;">Add Member</h3>
+          <form id="addMemberForm" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="amUsername">Username</label><input id="amUsername" required></div>
+              <div class="field"><label for="amPassword">Temporary password</label><input id="amPassword" required></div>
+              <div class="field"><label for="amName">Full name</label><input id="amName" required></div>
+              <div class="field"><label for="amPhone">Phone</label><input id="amPhone" required></div>
+              <div class="field field-full"><label for="amAddress">Address</label><input id="amAddress" required></div>
+              <div class="field"><label for="amEmail">Email</label><input id="amEmail" type="email" required></div>
+              <div class="field"><label for="amWorkshop">Home workshop</label><select id="amWorkshop" required><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+            </div>
+            <button class="btn btn-amber" type="submit">Create Member Account</button>
+            <button class="btn btn-ghost" type="button" id="cancelAddMember" style="margin-left:10px;">Cancel</button>
+            <div class="form-msg" id="addMemberMsg"></div>
+          </form>
+        </div>
+
+        <div class="table-wrap">
+          <table><thead><tr><th>Username</th><th>Full Name</th><th>Address</th><th>Phone</th><th>Email</th><th>Home Workshop</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="staffMembersBody"><tr class="empty-row"><td colspan="8">Log in to see members.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- FEATURE 2: Bookings approval -->
+      <div class="dash-panel" id="staffBookingsPanel">
+        <div class="toolbar">
+          <div class="field"><label for="staffBookingWorkshopFilter">Workshop</label>
+            <select id="staffBookingWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+          <button class="btn btn-ghost btn-small" id="bookingsRefresh">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Requested</th><th>Name</th><th>Phone</th><th>Vehicle</th><th>Workshop</th><th>Service</th><th>Status</th><th>Notes</th><th>Action</th></tr></thead>
+            <tbody id="bookingsBody"><tr class="empty-row"><td colspan="9">Log in to see bookings.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- FEATURE 7: Analytics -->
+      <div class="dash-panel active" id="staffAnalyticsPanel">
+<div class="stat-row">
+        <div class="stat-box"><strong id="staffTotalServices">0</strong><span>Services shown</span></div>
+        <div class="stat-box"><strong id="staffTotalRevenue">RM 0</strong><span>Revenue shown</span></div>
+        <div class="stat-box"><strong id="staffTotalMembers">0</strong><span>Members shown</span></div>
+        <div class="stat-box"><strong id="staffScope">—</strong><span>Viewing scope</span></div>
+      </div>
+        <div class="stat-row" style="grid-template-columns:repeat(2,1fr)">
+          <div class="stat-box"><strong id="anaTotalRevenue">RM 0</strong><span>Total revenue (last 12 months)</span></div>
+          <div class="stat-box"><strong id="anaTotalJobs">0</strong><span>Total jobs (last 12 months)</span></div>
+        </div>
+        <div class="chart-panel"><canvas id="analyticsChart" height="110"></canvas></div>
+
+        <div class="grid-2" style="margin-top:26px;">
+          <div class="chart-panel">
+            <div class="toolbar" style="margin-bottom:6px;align-items:center;">
+              <h3 style="margin:0;flex:1;">Service Type Breakdown</h3>
+              <div class="field" style="margin-bottom:0;"><label for="svcTypeWorkshopFilter">Workshop</label>
+                <select id="svcTypeWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+            </div>
+            <canvas id="serviceTypeChart" height="230"></canvas>
+            <p class="form-note hidden" id="serviceTypeEmptyMsg">No service records yet for this selection.</p>
+          </div>
+          <div class="chart-panel">
+            <div class="toolbar" style="margin-bottom:6px;align-items:center;">
+              <h3 id="memberChartTitle" style="margin:0;flex:1;">Members by Workshop</h3>
+              <div class="field" style="margin-bottom:0;"><label for="memberWorkshopFilter">Workshop</label>
+                <select id="memberWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+            </div>
+            <canvas id="memberChart" height="230"></canvas>
+            <p class="form-note hidden" id="memberEmptyMsg">No members yet for this selection.</p>
+          </div>
+        </div>
+
+        <div class="chart-panel" style="margin-top:26px;">
+          <div class="toolbar" style="margin-bottom:6px;align-items:center;">
+            <h3 style="margin:0;flex:1;">Daily Revenue</h3>
+            <div class="field" style="margin-bottom:0;"><label for="dailyRevenueMonthFilter">Month</label>
+              <select id="dailyRevenueMonthFilter"></select></div>
+          </div>
+          <canvas id="dailyRevenueChart" height="120"></canvas>
+        </div>
+      </div>
+
+      <!-- FEATURE 8 (display): submitted customer reviews -->
+      <div class="dash-panel" id="staffReviewsPanel">
+        <div class="stat-row" style="grid-template-columns:repeat(2,1fr)">
+          <div class="stat-box"><strong id="revAvgRating">—</strong><span>Average rating</span></div>
+          <div class="stat-box"><strong id="revCount">0</strong><span>Reviews shown</span></div>
+        </div>
+        <div class="toolbar">
+          <div class="field"><label for="staffReviewWorkshopFilter">Workshop</label>
+            <select id="staffReviewWorkshopFilter"><option value="All">All Locations</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+          <button class="btn btn-ghost btn-small" id="reviewsRefresh">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Submitted</th><th>Name</th><th>Workshop</th><th>Rating</th><th>Comment</th></tr></thead>
+            <tbody id="reviewsBody"><tr class="empty-row"><td colspan="5">Log in to see reviews.</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- Manage staff accounts (webmaster only) -->
+      <div class="dash-panel" id="staffAccountsPanel">
+        <div class="table-wrap">
+          <table><thead><tr><th>Username</th><th>Role</th><th>Workshop</th><th>Full Name</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="accountsBody"><tr class="empty-row"><td colspan="6">Log in as webmaster to manage accounts.</td></tr></tbody></table>
+        </div>
+        <form class="form-panel" id="addStaffForm" novalidate style="margin-top:22px">
+          <h3>Create staff account</h3>
+          <div class="form-grid">
+            <div class="field"><label for="asUsername">Username</label><input id="asUsername" required></div>
+            <div class="field"><label for="asPassword">Temporary password</label><input id="asPassword" required></div>
+            <div class="field"><label for="asName">Full name</label><input id="asName" required></div>
+            <div class="field"><label for="asEmail">Email (optional — needed for login codes)</label><input id="asEmail" type="email"></div>
+            <div class="field"><label for="asRole">Role</label><select id="asRole" required><option value="admin">Admin</option><option value="manager">Manager</option><option value="webmaster">Webmaster</option></select></div>
+            <div class="field"><label for="asWorkshop">Workshop (admin only)</label><select id="asWorkshop"><option value="All">All / N/A</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select></div>
+          </div>
+          <p class="form-note">Email is optional at creation. Without it, this account will log in directly (no OTP code) until you add an email later in the "Credentials" tab of the Google Sheet — after that, logins for this account will require the emailed code.</p>
+          <button class="btn btn-amber" type="submit">Create Staff Account</button>
+          <div class="form-msg" id="addStaffMsg"></div>
+        </form>
+      </div>
+
+      <!-- Change own password (any staff role) -->
+      <div class="dash-panel" id="staffPasswordPanel">
+        <form class="form-panel" id="staffPasswordForm" novalidate style="max-width:440px">
+          <div class="field"><label for="staffOldPass">Current password</label><input id="staffOldPass" type="password" required></div>
+          <div class="field"><label for="staffNewPass">New password</label><input id="staffNewPass" type="password" required minlength="6"></div>
+          <button class="btn btn-amber" type="submit">Update Password</button>
+          <div class="form-msg" id="staffPasswordMsg"></div>
+        </form>
+      </div>
+
+      <!-- FEATURE 11: Audit log (webmaster only) -->
+      <div class="dash-panel" id="staffAuditLogPanel">
+        <div class="toolbar"><button class="btn btn-ghost btn-small" id="auditLogRefresh">Refresh</button></div>
+        <div class="table-wrap">
+          <table><thead><tr><th>Time</th><th>Username</th><th>Role</th><th>Action</th><th>Details</th></tr></thead>
+            <tbody id="auditLogBody"><tr class="empty-row"><td colspan="5">Log in as webmaster to see activity.</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<div id="bookingModal" class="modal-overlay hidden"><div class="modal-box"><button class="modal-close" id="bookingClose" aria-label="Close">&times;</button><h3>Book an appointment</h3>
+<form class="form-panel" id="bookingForm" novalidate>
+      <div class="form-grid">
+        <div class="field"><label for="bkName">Full name</label><input id="bkName" name="name" required></div>
+        <div class="field"><label for="bkPhone">Phone number</label><input id="bkPhone" name="phone" required></div>
+        <div class="field"><label for="bkEmail">Email</label><input id="bkEmail" type="email" name="email" required></div>
+        <div class="field"><label for="bkWorkshop">Workshop location</label>
+          <select id="bkWorkshop" name="workshop" required><option value="">Select location</option><option>Melaka</option><option>Negeri Sembilan</option><option>Johor</option></select>
+        </div>
+        <div class="field"><label for="bkVehicleType">Vehicle type</label><input id="bkVehicleType" name="vehicleType" placeholder="e.g. Honda City 2019" required></div>
+        <div class="field"><label for="bkPlate">Vehicle plate number</label><input id="bkPlate" name="plate" required></div>
+        <div class="field"><label for="bkService">Type of service</label>
+          <select id="bkService" name="serviceType" required><option value="">Select service</option><option>Normal Service</option><option>Repair</option><option>Troubleshooting</option><option>Car Wash</option><option>A/C Service</option></select>
+        </div>
+        <div class="field"><label for="bkDate">Preferred date</label><input id="bkDate" type="date" name="date" required></div>
+        <div class="field"><label for="bkTime">Preferred time</label><input id="bkTime" type="time" name="time" required></div>
+        <div class="field field-full"><label for="bkNotes">Notes (optional)</label><textarea id="bkNotes" name="notes" rows="3"></textarea></div>
+        <!-- Honeypot field — invisible to real users, catches simple bots (Feature 13) -->
+        <div class="field hp-field" aria-hidden="true">
+          <label for="bkWebsite">Company website</label><input id="bkWebsite" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="field field-full">
+          <label id="captchaQuestion" for="captchaInput">What is 3 + 4?</label>
+          <input id="captchaInput" inputmode="numeric" placeholder="Your answer" required>
+        </div>
+      </div>
+      <button class="btn btn-amber btn-block" type="submit" id="bkSubmit">Request Appointment</button>
+      <div class="form-msg" id="bkMsg"></div>
+    </form></div></div>
+
+<div id="reviewModal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close" id="reviewClose" aria-label="Close">&times;</button>
+    <div id="reviewInvalidMsg" class="hidden"></div>
+    <div id="reviewFormSection">
+      <h3>Rate your visit to <span id="reviewWorkshopName">Workshop2U</span></h3>
+      <form id="reviewForm" novalidate>
+        <div class="star-row">
+          <button type="button" class="star-btn" data-value="1">&#9733;</button>
+          <button type="button" class="star-btn" data-value="2">&#9733;</button>
+          <button type="button" class="star-btn" data-value="3">&#9733;</button>
+          <button type="button" class="star-btn" data-value="4">&#9733;</button>
+          <button type="button" class="star-btn" data-value="5">&#9733;</button>
+        </div>
+        <div class="field"><label for="reviewComment">Comment (optional)</label><textarea id="reviewComment" rows="3"></textarea></div>
+        <button class="btn btn-amber btn-block" type="submit">Submit Feedback</button>
+        <div class="form-msg" id="reviewMsg"></div>
+      </form>
+    </div>
+    <div id="reviewThankYouSection" class="hidden"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="script.js"></script>
+<script src="portal.js"></script>
+</body></html>
